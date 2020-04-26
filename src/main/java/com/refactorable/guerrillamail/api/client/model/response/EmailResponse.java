@@ -15,21 +15,8 @@ public class EmailResponse {
     private final String excerpt;
     private final String body;
     private final String timestamp;
-    private final String contentType;
     private final Boolean read;
 
-    /**
-     *
-     * @param id cannot be null
-     * @param from cannot be blank
-     * @param recipient cannot be blank
-     * @param subject cannot be blank
-     * @param excerpt cannot be blank
-     * @param body cannot be blank
-     * @param timestamp cannot be blank
-     * @param contentType cannot be blank
-     * @param read cannot be null
-     */
     @JsonCreator
     public EmailResponse(
             @JsonProperty( "mail_id" ) Long id,
@@ -39,18 +26,7 @@ public class EmailResponse {
             @JsonProperty( "mail_excerpt" ) String excerpt,
             @JsonProperty( "mail_body" ) String body,
             @JsonProperty( "mail_timestamp" ) String timestamp,
-            @JsonProperty( "content_type" ) String contentType,
             @JsonProperty( "mail_read" ) Integer read ) {
-
-        Validate.notNull( id, "'sessionId' cannot be null" );
-        Validate.notBlank( from, "'from' cannot be blank" );
-        Validate.notBlank( recipient, "'recipient' cannot be blank" );
-        Validate.notBlank( subject, "'subject' cannot be blank" );
-        Validate.notBlank( excerpt, "'excerpt' cannot be blank" );
-        Validate.notBlank( body, "'body' cannot be blank" );
-        Validate.notBlank( timestamp, "'timestamp' cannot be blank" );
-        Validate.notBlank( contentType, "'contentType' cannot be blank" );
-        Validate.notNull( read, "'read' cannot be null" );
 
         this.id = id;
         this.from = from;
@@ -59,7 +35,6 @@ public class EmailResponse {
         this.excerpt = excerpt;
         this.body = body;
         this.timestamp = timestamp;
-        this.contentType = contentType;
         this.read = read == 1;
     }
 
@@ -91,10 +66,6 @@ public class EmailResponse {
         return timestamp;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
     public Boolean getRead() {
         return read;
     }
@@ -109,7 +80,6 @@ public class EmailResponse {
                 ", excerpt='" + excerpt + '\'' +
                 ", body='" + body + '\'' +
                 ", timestamp='" + timestamp + '\'' +
-                ", contentType='" + contentType + '\'' +
                 ", read=" + read +
                 '}';
     }
