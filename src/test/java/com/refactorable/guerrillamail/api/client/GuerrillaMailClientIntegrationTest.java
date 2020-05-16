@@ -5,6 +5,7 @@ import com.refactorable.guerrillamail.api.client.model.request.AddressRequest;
 import com.refactorable.guerrillamail.api.client.model.request.EmailRequest;
 import com.refactorable.guerrillamail.api.client.model.request.EmailsRequest;
 import com.refactorable.guerrillamail.api.client.model.response.AddressResponse;
+import com.refactorable.guerrillamail.api.client.model.response.DeleteResponse;
 import com.refactorable.guerrillamail.api.client.model.response.EmailResponse;
 import com.refactorable.guerrillamail.api.client.model.response.EmailsResponse;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -17,7 +18,7 @@ import javax.ws.rs.client.WebTarget;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class GuerrillaMailClientIntegrationTest {
 
@@ -42,7 +43,7 @@ public class GuerrillaMailClientIntegrationTest {
                 guerrillaMailClient
                         .address( AddressRequest.initialize() );
 
-        assertTrue( addressResponse.getAddress() != null );
+        assertNotNull(addressResponse.getAddress());
     }
 
     @Test
@@ -57,10 +58,8 @@ public class GuerrillaMailClientIntegrationTest {
                 guerrillaMailClient
                         .address( AddressRequest.remember( sessionId ) );
 
-        assertTrue(
-                addressResponse
-                        .getAddress()
-                        .equals( initializedAddressResponse.getAddress() ) );
+        assertEquals(addressResponse
+                .getAddress(), initializedAddressResponse.getAddress());
     }
 
     @Test
@@ -75,10 +74,8 @@ public class GuerrillaMailClientIntegrationTest {
                 guerrillaMailClient
                         .address( AddressRequest.forget( sessionId ) );
 
-        assertTrue(
-                !addressResponse
-                        .getAddress()
-                        .equals( initializedAddressResponse.getAddress() ) );
+        assertNotEquals(addressResponse
+                .getAddress(), initializedAddressResponse.getAddress());
     }
 
     @Test
@@ -96,7 +93,7 @@ public class GuerrillaMailClientIntegrationTest {
                                 sessionId,
                                 emailUser ) );
 
-        assertTrue( addressResponse.getAddress() != null );
+        assertNotNull(addressResponse.getAddress());
         assertTrue( addressResponse.getAddress().contains( emailUser ) );
     }
 
@@ -115,7 +112,7 @@ public class GuerrillaMailClientIntegrationTest {
                                 sessionId,
                                 sequenceId ) );
 
-        assertTrue( !emailsResponse.getEmails().isEmpty() );
+        assertFalse(emailsResponse.getEmails().isEmpty());
     }
 
     @Test
@@ -135,7 +132,7 @@ public class GuerrillaMailClientIntegrationTest {
                                 sequenceId,
                                 offset ) );
 
-        assertTrue( !emailsResponse.getEmails().isEmpty() );
+        assertFalse(emailsResponse.getEmails().isEmpty());
     }
 
     @Test
@@ -155,11 +152,49 @@ public class GuerrillaMailClientIntegrationTest {
 
         Long emailId = emailsResponse.getEmails().get( 0 ).getId();
         EmailResponse emailResponse =
-                guerrillaMailClient.email(
-                        new EmailRequest(
-                                sessionId,
-                                emailId ) );
+                guerrillaMailClient.email( EmailRequest.fetch(
+                        sessionId,
+                        emailId) );
 
-        assertTrue( emailResponse.getBody() != null );
+
+        assertNotNull(emailResponse.getBody());
+    }
+
+    @Test
+    public void ShouldDeleteEmail() {
+
+        AddressResponse initializedAddressResponse =
+                guerrillaMailClient
+                        .address( AddressRequest.initialize() );
+
+        String sessionId = initializedAddressResponse.getSessionId();
+        Long sequenceId = 0L;
+        EmailsResponse emailsResponse =
+                guerrillaMailClient
+                        .emails( EmailsRequest.check(
+                                sessionId,
+                                sequenceId ) );
+
+        Long emailId = emailsResponse.getEmails().get( 0 ).getId();
+        EmailResponse emailResponse =
+                guerrillaMailClient.email( EmailRequest.fetch(
+                        sessionId,
+                        emailId) );
+        assertNotNull(emailResponse.getBody());
+
+        DeleteResponse deleteResponse =
+                guerrillaMailClient.delete( EmailRequest.delete(
+                        sessionId,
+                        emailId) );
+        assertFalse( deleteResponse.getDeletedIds().isEmpty() );
+
+        EmailsResponse emailsResponse1 =
+                guerrillaMailClient
+                        .emails( EmailsRequest.check(
+                                sessionId,
+                                sequenceId ) );
+
+
+        assertTrue( emailsResponse1.getEmails().isEmpty() );
     }
 }

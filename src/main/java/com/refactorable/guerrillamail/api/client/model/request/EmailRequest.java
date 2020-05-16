@@ -14,15 +14,39 @@ public class EmailRequest {
      * @param id cannot be null
      */
     public EmailRequest(
+            FunctionType functionType,
             String sessionId,
             Long id ) {
+
+        Validate.notNull( functionType, "'functionType' cannot be null" );
+
+        this.functionType = functionType;
+        this.sessionId = sessionId;
+        this.id = id;
+    }
+
+    public static EmailRequest fetch(String sessionId, Long id) {
 
         Validate.notBlank( sessionId, "'sessionId' cannot be blank" );
         Validate.notNull( id, "'id' cannot be null" );
 
-        this.functionType = FunctionType.FETCH_EMAIL;
-        this.sessionId = sessionId;
-        this.id = id;
+        return new EmailRequest(
+                FunctionType.FETCH_EMAIL,
+                sessionId,
+                id
+        );
+    }
+
+    public static EmailRequest delete(String sessionId, Long emailId) {
+
+        Validate.notBlank( sessionId, "'sessionId' cannot be blank" );
+        Validate.notNull( emailId, "'id' cannot be null" );
+
+        return new EmailRequest(
+                FunctionType.DEL_EMAIL,
+                sessionId,
+                emailId
+        );
     }
 
     public FunctionType getFunctionType() {
@@ -32,6 +56,8 @@ public class EmailRequest {
     public Long getId() {
         return id;
     }
+
+
 
     public String getSessionId() {
         return sessionId;

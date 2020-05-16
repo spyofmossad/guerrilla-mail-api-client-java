@@ -7,7 +7,8 @@ public enum FunctionType {
     CHECK_EMAIL( "check_email" ),
     GET_EMAIL_LIST( "get_email_list" ),
     FETCH_EMAIL( "fetch_email" ),
-    FORGET_ME( "forget_me" );
+    FORGET_ME( "forget_me" ),
+    DEL_EMAIL( "del_email" );
 
     private final String function;
 

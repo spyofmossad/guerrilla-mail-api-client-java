@@ -4,6 +4,7 @@ import com.refactorable.guerrillamail.api.client.model.request.AddressRequest;
 import com.refactorable.guerrillamail.api.client.model.request.EmailRequest;
 import com.refactorable.guerrillamail.api.client.model.request.EmailsRequest;
 import com.refactorable.guerrillamail.api.client.model.response.AddressResponse;
+import com.refactorable.guerrillamail.api.client.model.response.DeleteResponse;
 import com.refactorable.guerrillamail.api.client.model.response.EmailResponse;
 import com.refactorable.guerrillamail.api.client.model.response.EmailsResponse;
 
@@ -29,4 +30,11 @@ public interface GuerrillaMailClient {
      * @return
      */
     EmailsResponse emails( EmailsRequest emailsRequest );
+
+    /**
+     *
+     * @param emailRequest cannot be null
+     * @return
+     */
+    DeleteResponse delete(EmailRequest emailRequest );
 }

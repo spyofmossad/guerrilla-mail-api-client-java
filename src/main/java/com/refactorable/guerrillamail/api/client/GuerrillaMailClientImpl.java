@@ -5,6 +5,7 @@ import com.refactorable.guerrillamail.api.client.model.request.EmailRequest;
 import com.refactorable.guerrillamail.api.client.model.request.EmailsRequest;
 import com.refactorable.guerrillamail.api.client.model.request.FunctionType;
 import com.refactorable.guerrillamail.api.client.model.response.AddressResponse;
+import com.refactorable.guerrillamail.api.client.model.response.DeleteResponse;
 import com.refactorable.guerrillamail.api.client.model.response.EmailResponse;
 import com.refactorable.guerrillamail.api.client.model.response.EmailsResponse;
 import org.apache.commons.lang3.Validate;
@@ -25,6 +26,7 @@ public class GuerrillaMailClientImpl implements GuerrillaMailClient {
     private final static String PARAM_NAME_OFFSET = "offset";
     private final static String PARAM_NAME_EMAIL_ID = "email_id";
     private final static String PARAM_NAME_EMAIL_USER = "email_user";
+    private final static String PARAM_NAME_EMAIL_IDS = "email_ids[]";
 
     private final WebTarget apiTarget;
 
@@ -134,6 +136,34 @@ public class GuerrillaMailClientImpl implements GuerrillaMailClient {
             return null;
         } catch( Exception e ) {
             log.error( "emails request failed: ", e );
+            throw new RuntimeException( e );
+        }
+    }
+
+    @Override
+    public DeleteResponse delete(EmailRequest emailRequest ) {
+
+        Validate.notNull( emailRequest, "'emailRequest' cannot be null" );
+
+        log.debug( "making email request: {}", emailRequest );
+
+        try {
+            return apiTarget
+                    .queryParam(
+                            PARAM_NAME_FUNCTION,
+                            emailRequest.getFunctionType().getFunction())
+                    .queryParam(
+                            PARAM_NAME_SESSION_ID,
+                            emailRequest.getSessionId())
+                    .queryParam(
+                            PARAM_NAME_EMAIL_IDS,
+                            emailRequest.getId())
+                    .request( MediaType.APPLICATION_JSON )
+                    .get( DeleteResponse.class );
+        } catch( ResponseProcessingException rpe ) {
+            return null;
+        } catch( Exception e ) {
+            log.error( "email request failed: ", e );
             throw new RuntimeException( e );
         }
     }
